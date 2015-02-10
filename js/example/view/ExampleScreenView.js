@@ -18,6 +18,10 @@ define( function( require ) {
   var ScreenView = require( 'JOIST/ScreenView' );
   var Vector2 = require( 'DOT/Vector2' );
 
+  // screen size macros
+  var simWidth = 786;
+  var simHeight = 504;
+
   /**
    * Constructor for the ExampleScreenView, it creates the bar magnet node and control panel node.
    * @param {BarMagnetModel} model the model for the entire screen
@@ -26,13 +30,13 @@ define( function( require ) {
   function ExampleScreenView( model ) {
 
     var exampleScreenView = this;
-    ScreenView.call( exampleScreenView, { layoutBounds: new Bounds2( 0, 0, 768, 504 ) } );
+    ScreenView.call( exampleScreenView, { layoutBounds: new Bounds2( 0, 0, simWidth, simHeight ) } );
 
     // model-view transform
     var modelViewTransform = ModelViewTransform2.createOffsetScaleMapping( new Vector2( exampleScreenView.layoutBounds.width / 2, exampleScreenView.layoutBounds.height / 2 ), 1 );
 
-    exampleScreenView.addChild( new BarMagnetNode( model.barMagnet, modelViewTransform ) );
-    exampleScreenView.addChild( new ControlPanel( model, { x: 50, y: 50 } ) );
+    exampleScreenView.addChild( new BarMagnetNode( model.barMagnet[0], modelViewTransform, 0, 0 ) );
+    exampleScreenView.addChild( new ControlPanel( model, { x: 50, y: 50 }, simWidth, simHeight, this, modelViewTransform ) );
   }
 
   return inherit( ScreenView, ExampleScreenView );

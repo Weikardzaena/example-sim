@@ -22,15 +22,22 @@ define( function( require ) {
   function ExampleModel() {
 
     // model elements
-    this.barMagnet = new BarMagnet( new Vector2( 0, 0 ), new Dimension2( 262.5, 52.5 ), 0 );
+	this.barMagnet = [];
+	this.barMagnet.push( new BarMagnet( new Vector2( 0, 0 ), new Dimension2( 262.5, 52.5 ), 0 ) );
   }
 
   return inherit( Object, ExampleModel, {
 
     // Resets all model elements
     reset: function() {
-      this.barMagnet.reset();
+		this.barMagnet.splice(1, this.barMagnet.length);
+		this.barMagnet[0].reset();
     },
+
+	addBarMagnet: function() {
+		this.barMagnet.push( new BarMagnet( new Vector2( 0, 0 ), new Dimension2( 262.5, 52.5 ), 0 ) );
+		return this.barMagnet.length - 1;
+	},
 
     // Called by the animation loop. Optional, so if your model has no animation, you can omit this.
     step: function() {

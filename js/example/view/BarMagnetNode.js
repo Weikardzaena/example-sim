@@ -24,7 +24,7 @@ define( function( require ) {
    * @param {ModelViewTransform2} modelViewTransform the coordinate transform between model coordinates and view coordinates
    * @constructor
    */
-  function BarMagnetNode( barMagnet, modelViewTransform ) {
+  function BarMagnetNode( barMagnet, modelViewTransform, xPos, yPos ) {
 
     var barMagnetNode = this;
 
@@ -35,34 +35,34 @@ define( function( require ) {
       cursor: 'pointer'
     } );
 
-    // Add the centered bar magnet image
-    barMagnetNode.addChild( new Image( barMagnetImage, { centerX: 0, centerY: 0 } ) );
+	// Add the bar magnet image
+    barMagnetNode.addChild( new Image( barMagnetImage, { centerX: xPos, centerY: yPos } ) );
 
-    // Scale it so it matches the model width and height
-    barMagnetNode.scale( modelViewTransform.modelToViewDeltaX( barMagnet.size.width ) / this.width,
-      modelViewTransform.modelToViewDeltaY( barMagnet.size.height ) / this.height );
+	// Scale it so it matches the model width and height
+    barMagnetNode.scale( modelViewTransform.modelToViewDeltaX( barMagnet.size.width ) / barMagnetNode.width,
+    modelViewTransform.modelToViewDeltaY( barMagnet.size.height ) / barMagnetNode.height );
 
-    // When dragging, move the bar magnet
-    barMagnetNode.addInputListener( new SimpleDragHandler(
-      {
-        // When dragging across it in a mobile device, pick it up
-        allowTouchSnag: true,
+	// When dragging, move the bar magnet
+	barMagnetNode.addInputListener( new SimpleDragHandler(
+	  {
+		// When dragging across it in a mobile device, pick it up
+		allowTouchSnag: true,
 
-        // Translate on drag events
-        translate: function( args ) {
-          barMagnet.location = modelViewTransform.viewToModelPosition( args.position );
-        }
-      } ) );
+		// Translate on drag events
+		translate: function( args ) {
+		  barMagnet.location = modelViewTransform.viewToModelPosition( args.position );
+		}
+	  } ) );
 
-    // Register for synchronization with model.
-    barMagnet.locationProperty.link( function( location ) {
-      barMagnetNode.translation = modelViewTransform.modelToViewPosition( location );
-    } );
+	// Register for synchronization with model.
+	barMagnet.locationProperty.link( function( location ) {
+	  barMagnetNode.translation = modelViewTransform.modelToViewPosition( location );
+	} );
 
-    // Register for synchronization with model
-    barMagnet.orientationProperty.link( function( orientation ) {
-      barMagnetNode.rotation = orientation;
-    } );
+	// Register for synchronization with model
+	barMagnet.orientationProperty.link( function( orientation ) {
+	  barMagnetNode.rotation = orientation;
+	} );
   }
 
   return inherit( Node, BarMagnetNode );
