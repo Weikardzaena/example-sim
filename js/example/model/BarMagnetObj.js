@@ -22,10 +22,10 @@ define( function( require ) {
    * @param {number} orientation in radians
    * @constructor
    */
-  function BarMagnet( location, size, orientation ) {
+  function BarMagnetObj( location, size, orientation ) {
     PropertySet.call( this, { location: location, orientation: orientation } );
     this.size = size;
   }
 
-  return inherit( PropertySet, BarMagnet );
+  return inherit( PropertySet, BarMagnetObj );
 } );

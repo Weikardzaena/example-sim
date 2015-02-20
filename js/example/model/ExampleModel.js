@@ -10,33 +10,39 @@ define( function( require ) {
   'use strict';
 
   // modules
-  var BarMagnet = require( 'EXAMPLE_SIM/example/model/BarMagnet' );
+  var BarMagnetObj = require( 'EXAMPLE_SIM/example/model/BarMagnetObj' );
   var Dimension2 = require( 'DOT/Dimension2' );
-  var Vector2 = require( 'DOT/Vector2' );
   var inherit = require( 'PHET_CORE/inherit' );
+  var ObservableArray = require ( 'AXON/ObservableArray' );
+  var Vector2 = require ( 'DOT/Vector2' );
 
   /**
-   * Main constructor for ExampleModel, which creates the bar magnet.
+   * Main constructor for ExampleModel, which manages the bar magnets.
    * @constructor
    */
   function ExampleModel() {
 
     // model elements
-	this.barMagnet = [];
-	this.barMagnet.push( new BarMagnet( new Vector2( 0, 0 ), new Dimension2( 262.5, 52.5 ), 0 ) );
+	this.barMagnetArray = new ObservableArray();
   }
 
   return inherit( Object, ExampleModel, {
 
     // Resets all model elements
     reset: function() {
-		this.barMagnet.splice(1, this.barMagnet.length);
-		this.barMagnet[0].reset();
+		this.barMagnetArray.clear();
+		this.createBarMagnetObj( 0, 0 );
     },
 
-	addBarMagnet: function() {
-		this.barMagnet.push( new BarMagnet( new Vector2( 0, 0 ), new Dimension2( 262.5, 52.5 ), 0 ) );
-		return this.barMagnet.length - 1;
+	createBarMagnetObj: function() {
+		// TODO: add checks here if the arguments are not integers or a Vector2 type.
+		if ( arguments.length === 2 )
+			var posVector = new Vector2( arguments[0], arguments[1] );
+		else if ( arguments.length === 1 )
+			var posVector = arguments[0];
+		
+		var newBarMagnetObj = new BarMagnetObj( posVector, new Dimension2( 262.5, 52.5 ), 0 );
+		this.barMagnetArray.push( newBarMagnetObj );
 	},
 
     // Called by the animation loop. Optional, so if your model has no animation, you can omit this.

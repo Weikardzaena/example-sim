@@ -17,7 +17,6 @@ define( function( require ) {
   var TextPushButton = require( 'SUN/buttons/TextPushButton' );
   var VBox = require( 'SCENERY/nodes/VBox' );
   var Vector2 = require( 'DOT/Vector2' );
-  var BarMagnetNode = require ( 'EXAMPLE_SIM/example/view/BarMagnetNode' );
 
   // strings
   var flipPolarityString = require( 'string!EXAMPLE_SIM/flipPolarity' );
@@ -28,13 +27,15 @@ define( function( require ) {
    * Control panel constructor
    * @param {BarMagnetModel} model the entire model for the bar magnet screen
    * @param {Object} [options] scenery options for rendering the control panel, see the constructor for options.
-   * @param {int} simWidth, simHeight: the ranges in which we can place the random magnets
-   * @param {ExampleScreenView} exampleScreenView: we add children to this Screen so it actually updates the simulation.
-   * @param {ModelViewTransform2} modelViewTransform: the transformation parameters that the BarMagnetNode constructor needs.
+   * @param {ExampleScreenView} exampleScreenView: needed for random position generation.
    * @constructor
    */
-  function ControlPanel( model, options, simWidth, simHeight, exampleScreenView, modelViewTransform ) {
+  function ControlPanel( model, options, exampleScreenView ) {
 
+	var controlPanel = this;
+	var simWidth = exampleScreenView.layoutBounds.width;
+	var simHeight = exampleScreenView.layoutBounds.height;
+	
     // Demonstrate a common pattern for specifying options and providing default values.
     options = _.extend( {
         xMargin: 10,
@@ -50,7 +51,8 @@ define( function( require ) {
       baseColor: 'yellow',
       xMargin: 10,
       listener: function() {
-        model.barMagnet[0].orientation = model.barMagnet[0].orientation + Math.PI;
+		// only apply this transformation to the first bar magnet.
+        model.barMagnetArray.get(0).orientation = model.barMagnetArray.get(0).orientation + Math.PI;
       }
     } );
 
@@ -60,16 +62,8 @@ define( function( require ) {
 		baseColor: 'orange',
 		xMargin: 10,
 		listener: function() {
-			/**
-			  * Since the model coordinates are only half the simulation screen
-			  * size values, we need to go to negative magnet coordinates to get access
-			  * to the whole screen. Also since Math.random() returns a value
-			  * from 0 - 1, it works out that we can just subtract 0.5 and multiply
-			  * it by the size of the simulation to get the whole screen.
-			  */
-			var xPos = (Math.random() - 0.5) * simWidth;
-			var yPos = (Math.random() - 0.5) * simHeight;
-			model.barMagnet[0].location = new Vector2( xPos, yPos ) ;
+			// only apply this transformation to the first bar magnet.
+			model.barMagnetArray.get(0).location = controlPanel.makeRandomPos( simWidth, simHeight );
 		}
 	} );
 
@@ -79,20 +73,13 @@ define( function( require ) {
 		baseColor: 'green',
 		xMargin: 10,
 		listener: function() {
-			var pos = model.addBarMagnet();
-			var xPos = (Math.random() - 0.5) * simWidth;
-			var yPos = (Math.random() - 0.5) * simHeight;
-			exampleScreenView.insertChild(0, new BarMagnetNode( model.barMagnet[pos], modelViewTransform, xPos, yPos ) );
+			model.createBarMagnetObj( controlPanel.makeRandomPos( simWidth, simHeight ) );
 		}
 	} );
 
     // 'Reset All' button, resets the sim to its initial state
     var resetAllButton = new ResetAllButton( {
 		listener: function() {
-			var len = exampleScreenView.getChildren().length - 2;
-			for( var i = 0; i < len; i++ ) {
-				exampleScreenView.removeChildAt( 0 );
-			}
 			model.reset();
 		}
 	} );
@@ -103,5 +90,21 @@ define( function( require ) {
     Panel.call( this, content, options );
   }
 
-  return inherit( Panel, ControlPanel );
+  return inherit( Panel, ControlPanel , {
+	  /**
+	   * Since the model coordinates are only half the simulation screen
+	   * size values, we need to go to negative magnet coordinates to get access
+	   * to the whole screen. Also since Math.random() returns a value
+	   * from 0 - 1, it works out that we can just subtract 0.5 and multiply
+	   * it by the size of the simulation to get the whole screen.
+	   * @param {int} width - The width of the simulation screen view
+	   * @param {int} height - The height of the simulation screen view.
+	   */
+	  makeRandomPos: function( width, height ) {
+		  var xPos = (Math.random() - 0.5) * width;
+		  var yPos = (Math.random() - 0.5) * height;
+		  var vector = new Vector2( xPos, yPos );
+		  return vector;
+	  }
+  } );
 } );

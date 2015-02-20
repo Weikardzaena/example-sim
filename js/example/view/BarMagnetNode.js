@@ -20,11 +20,11 @@ define( function( require ) {
 
   /**
    * Constructor for the BarMagnetNode which renders the bar magnet as a scenery node.
-   * @param {BarMagnet} barMagnet the model of the bar magnet
-   * @param {ModelViewTransform2} modelViewTransform the coordinate transform between model coordinates and view coordinates
+   * @param {BarMagnetObj} barMagnetObj - the model of the bar magnet
+   * @param {ModelViewTransform2} modelViewTransform - the coordinate transform between model coordinates and view coordinates
    * @constructor
    */
-  function BarMagnetNode( barMagnet, modelViewTransform, xPos, yPos ) {
+  function BarMagnetNode( barMagnetObj, modelViewTransform ) {
 
     var barMagnetNode = this;
 
@@ -36,31 +36,31 @@ define( function( require ) {
     } );
 
 	// Add the bar magnet image
-    barMagnetNode.addChild( new Image( barMagnetImage, { centerX: xPos, centerY: yPos } ) );
+    barMagnetNode.addChild( new Image( barMagnetImage, { centerX: 0, centerY: 0 } ) );
 
 	// Scale it so it matches the model width and height
-    barMagnetNode.scale( modelViewTransform.modelToViewDeltaX( barMagnet.size.width ) / barMagnetNode.width,
-    modelViewTransform.modelToViewDeltaY( barMagnet.size.height ) / barMagnetNode.height );
+    barMagnetNode.scale( modelViewTransform.modelToViewDeltaX( barMagnetObj.size.width ) / barMagnetNode.width,
+    modelViewTransform.modelToViewDeltaY( barMagnetObj.size.height ) / barMagnetNode.height );
 
 	// When dragging, move the bar magnet
 	barMagnetNode.addInputListener( new SimpleDragHandler(
-	  {
+	{
 		// When dragging across it in a mobile device, pick it up
 		allowTouchSnag: true,
 
 		// Translate on drag events
 		translate: function( args ) {
-		  barMagnet.location = modelViewTransform.viewToModelPosition( args.position );
+		  barMagnetObj.location = modelViewTransform.viewToModelPosition( args.position );
 		}
-	  } ) );
+	} ) );
 
 	// Register for synchronization with model.
-	barMagnet.locationProperty.link( function( location ) {
+	barMagnetObj.locationProperty.link( function( location ) {
 	  barMagnetNode.translation = modelViewTransform.modelToViewPosition( location );
 	} );
 
 	// Register for synchronization with model
-	barMagnet.orientationProperty.link( function( orientation ) {
+	barMagnetObj.orientationProperty.link( function( orientation ) {
 	  barMagnetNode.rotation = orientation;
 	} );
   }
